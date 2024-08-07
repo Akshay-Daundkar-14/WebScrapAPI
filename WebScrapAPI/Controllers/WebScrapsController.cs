@@ -25,14 +25,15 @@ namespace WebScrapAPI.Controllers
 
 
         [HttpGet]
-        async public Task<IActionResult> GetWebScraps(bool isWebScrab=false)
+        async public Task<IActionResult> GetWebScraps()
         {
 
+            // Getting records from database
+            var _dbRules = _ruleRepository.GetAllRules();
 
-            if (isWebScrab)
+            if (_dbRules == null || _dbRules.Count == 0)
             {
                 // Getting records from web scrapping 
-
                 List<Rule> rules = _webScrapBLL.GetWebScrap();
                 if (rules == null)
                 {
@@ -44,14 +45,7 @@ namespace WebScrapAPI.Controllers
                 {
                     _ruleRepository.AddRule(rule);
                 }
-            }
-            // Getting records from database
-
-            var _dbRules = _ruleRepository.GetAllRules();
-
-            if (_dbRules == null)
-            {
-                return StatusCode(500, "Something went wrong");
+               // return StatusCode(500, "Something went wrong");
             }
 
             return Ok(_dbRules);
