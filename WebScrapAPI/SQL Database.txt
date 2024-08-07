@@ -1,0 +1,72 @@
+﻿
+-- Database
+
+Create Database RuleDB
+
+Use RuleDB
+
+
+-- Create Rules Table
+CREATE TABLE Rules
+(
+    RuleID INT IDENTITY(1,1) PRIMARY KEY,
+    RuleType NVARCHAR(50) NOT NULL,
+    Date DATETIME NULL,
+    Title NVARCHAR(100) NOT NULL,
+    Description NVARCHAR(MAX) NOT NULL
+);
+
+SELECT * FROM Rules
+SELECT * FROM BulletPoints
+
+-- Create BulletPoints Table
+CREATE TABLE BulletPoints
+(
+    BulletPointID INT IDENTITY(1,1) PRIMARY KEY,
+    RuleID INT NOT NULL,
+    BulletPoint NVARCHAR(MAX) NOT NULL,
+    FOREIGN KEY (RuleID) REFERENCES Rules(RuleID)
+);
+
+-- Stored Procedure to Add Rule
+CREATE PROCEDURE AddRule
+    @RuleType NVARCHAR(50),
+    @Date DATETIME,
+    @Title NVARCHAR(100),
+    @Description NVARCHAR(MAX),
+	@NewRuleID INT OUTPUT
+AS
+BEGIN
+    INSERT INTO Rules (RuleType, Date, Title, Description)
+    VALUES (@RuleType, @Date, @Title, @Description);
+    
+    DECLARE @RuleID INT;
+	 SET @NewRuleID = SCOPE_IDENTITY();
+END
+
+-- Stored Procedure to Add Bullet Point
+CREATE PROCEDURE AddBulletPoint
+    @RuleID INT,
+    @BulletPoint NVARCHAR(MAX)
+AS
+BEGIN
+    INSERT INTO BulletPoints (RuleID, BulletPoint)
+    VALUES (@RuleID, @BulletPoint);
+END
+
+
+CREATE PROCEDURE GetAllRules
+AS
+BEGIN
+    SELECT 
+        r.RuleID,
+        r.RuleType,
+        r.Date,
+        r.Title,
+        r.Description,
+        bp.BulletPoint
+    FROM 
+        Rules r
+    LEFT JOIN 
+        BulletPoints bp ON r.RuleID = bp.RuleID;
+END
