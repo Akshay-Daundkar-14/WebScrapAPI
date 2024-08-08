@@ -23,7 +23,7 @@ namespace WebScrapAPI.Repository
                     try
                     {
                         // Insert Rule
-                        SqlCommand cmd = new SqlCommand("AddRule", conn);
+                        SqlCommand cmd = new SqlCommand(StoredProcedures.AddRule.ToString(), conn);
                         cmd.CommandType = CommandType.StoredProcedure;
 
                         cmd.Parameters.AddWithValue("@RuleType", rule.RuleType);
@@ -53,7 +53,7 @@ namespace WebScrapAPI.Repository
                         // Insert Bullet Points
                         foreach (var bulletPoint in rule.BulletPoints)
                         {
-                            SqlCommand bulletCmd = new SqlCommand("AddBulletPoint", conn);
+                            SqlCommand bulletCmd = new SqlCommand(StoredProcedures.AddBulletPoint.ToString(), conn);
                             bulletCmd.CommandType = CommandType.StoredProcedure;
 
                             bulletCmd.Parameters.AddWithValue("@RuleID", newRuleID);
@@ -80,7 +80,7 @@ namespace WebScrapAPI.Repository
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                SqlCommand cmd = new SqlCommand("GetAllRules", conn);
+                SqlCommand cmd = new SqlCommand(StoredProcedures.GetAllRules.ToString(), conn);
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
@@ -114,5 +114,10 @@ namespace WebScrapAPI.Repository
 
             return rules;
         }
+    }
+
+    internal enum StoredProcedures
+    {
+        AddRule, AddBulletPoint, GetAllRules
     }
 }

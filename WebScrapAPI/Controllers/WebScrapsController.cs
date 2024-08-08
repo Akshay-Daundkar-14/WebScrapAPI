@@ -27,28 +27,33 @@ namespace WebScrapAPI.Controllers
         [HttpGet]
         async public Task<IActionResult> GetWebScraps()
         {
-
-            // Getting records from database
-            var _dbRules = _ruleRepository.GetAllRules();
-
-            if (_dbRules == null || _dbRules.Count == 0)
+            try
             {
-                // Getting records from web scrapping 
-                List<Rule> rules = _webScrapBLL.GetWebScrap();
-                if (rules == null)
+                // Getting records from database
+                var _dbRules = _ruleRepository.GetAllRules();
+
+                if (_dbRules == null || _dbRules.Count == 0)
                 {
-                    return StatusCode(500, "Something went wrong");
+                    // Getting records from web scrapping 
+                    List<Rule> rules = _webScrapBLL.GetWebScrap();
+                    if (rules == null)
+                    {
+                        return StatusCode(500, "Something went wrong");
+                    }
+
+                    // Adding data in database
+                    foreach (var rule in rules)
+                    {
+                        _ruleRepository.AddRule(rule);
+                    }
                 }
 
-                // Adding data in database
-                foreach (var rule in rules)
-                {
-                    _ruleRepository.AddRule(rule);
-                }
-               // return StatusCode(500, "Something went wrong");
+                return Ok(_dbRules);
             }
-
-            return Ok(_dbRules);
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
 
         }
 
